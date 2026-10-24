@@ -126,7 +126,9 @@ export const EmergencyCardConfigPage: React.FC = () => {
         config.share_allergies ||
         config.share_conditions ||
         config.share_medications ||
-        config.share_primary_contact)
+        config.share_primary_contact ||
+        config.share_secondary_contact ||
+        (config.share_emergency_notes && config.emergency_notes && config.emergency_notes.trim().length > 0))
   );
 
   const handleGenerateNewQR = async () => {
@@ -182,6 +184,7 @@ export const EmergencyCardConfigPage: React.FC = () => {
 
   const activeToken = tokens.find(t => !t.is_revoked && new Date(t.expires_at) > new Date());
   const primaryContact = contacts.find(c => c.is_primary) || contacts[0];
+  const secondaryContact = contacts.find(c => !c.is_primary) || (contacts.length > 1 ? contacts[1] : undefined);
 
   return (
     <div className="space-y-6">
@@ -453,6 +456,32 @@ export const EmergencyCardConfigPage: React.FC = () => {
                       />
                     </label>
 
+                    <label className="flex items-center justify-between p-3 rounded-xl bg-slate-50 border border-slate-200/80 cursor-pointer hover:bg-slate-100/70 transition-colors">
+                      <div className="text-xs">
+                        <span className="font-semibold text-slate-900 block">Secondary Emergency Contact</span>
+                        <span className="text-slate-400 text-[11px]">{secondaryContact ? secondaryContact.name : 'No secondary contact set'}</span>
+                      </div>
+                      <input
+                        type="checkbox"
+                        checked={Boolean(config.share_secondary_contact)}
+                        onChange={e => handleConfigChange('share_secondary_contact', e.target.checked)}
+                        className="w-4 h-4 rounded text-teal-600 focus:ring-teal-500"
+                      />
+                    </label>
+
+                    <label className="flex items-center justify-between p-3 rounded-xl bg-slate-50 border border-slate-200/80 cursor-pointer hover:bg-slate-100/70 transition-colors">
+                      <div className="text-xs">
+                        <span className="font-semibold text-slate-900 block">Share Emergency Notes / Clinical Advisories</span>
+                        <span className="text-slate-400 text-[11px]">Explicit consent to expose notes below to first responders</span>
+                      </div>
+                      <input
+                        type="checkbox"
+                        checked={Boolean(config.share_emergency_notes)}
+                        onChange={e => handleConfigChange('share_emergency_notes', e.target.checked)}
+                        className="w-4 h-4 rounded text-teal-600 focus:ring-teal-500"
+                      />
+                    </label>
+
                     <div className="pt-2">
                       <label className="text-xs font-semibold text-slate-700 block mb-1">
                         First Responder Emergency Notes
@@ -563,6 +592,7 @@ export const EmergencyCardConfigPage: React.FC = () => {
                     conditions={conditions}
                     medications={medications}
                     primaryContact={primaryContact}
+                    secondaryContact={secondaryContact}
                   />
                 )}
               </div>

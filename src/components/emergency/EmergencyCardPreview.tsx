@@ -11,6 +11,7 @@ interface EmergencyCardPreviewProps {
   conditions: MedicalHistoryItem[];
   medications: Medication[];
   primaryContact?: EmergencyContact;
+  secondaryContact?: EmergencyContact;
 }
 
 export const EmergencyCardPreview: React.FC<EmergencyCardPreviewProps> = ({
@@ -20,6 +21,7 @@ export const EmergencyCardPreview: React.FC<EmergencyCardPreviewProps> = ({
   conditions,
   medications,
   primaryContact,
+  secondaryContact,
 }) => {
   return (
     <div className="bg-white rounded-3xl border-2 border-teal-600/30 shadow-card overflow-hidden transition-all max-w-xl mx-auto">
@@ -68,8 +70,8 @@ export const EmergencyCardPreview: React.FC<EmergencyCardPreviewProps> = ({
           </div>
         </div>
 
-        {/* Emergency Clinical Notes */}
-        {config.emergency_notes && (
+        {/* Emergency Clinical Notes (Requirement 3: Consent required) */}
+        {Boolean(config.share_emergency_notes) && config.emergency_notes && (
           <div className="bg-red-50 border-l-4 border-red-500 p-3 rounded-r-xl">
             <div className="text-[11px] font-bold text-red-800 uppercase tracking-wider flex items-center gap-1.5 mb-0.5">
               <AlertCircle className="w-3.5 h-3.5" />
@@ -174,6 +176,27 @@ export const EmergencyCardPreview: React.FC<EmergencyCardPreviewProps> = ({
             >
               <Phone className="w-3.5 h-3.5 fill-current" />
               <span>{primaryContact.phone_number}</span>
+            </a>
+          </div>
+        )}
+
+        {/* Secondary Emergency Contact (Requirement 11) */}
+        {Boolean(config.share_secondary_contact) && secondaryContact && (
+          <div className="bg-slate-50 border border-slate-200/80 rounded-2xl p-3.5 flex items-center justify-between">
+            <div>
+              <div className="text-[10px] font-bold uppercase tracking-wider text-slate-500">
+                Secondary Emergency Contact
+              </div>
+              <div className="text-sm font-bold text-slate-900 mt-0.5">
+                {secondaryContact.name} ({secondaryContact.relationship})
+              </div>
+            </div>
+            <a
+              href={`tel:${secondaryContact.phone_number}`}
+              className="inline-flex items-center gap-1.5 bg-slate-700 hover:bg-slate-800 text-white font-semibold text-xs px-3.5 py-2 rounded-xl shadow-sm transition-all"
+            >
+              <Phone className="w-3.5 h-3.5 fill-current" />
+              <span>{secondaryContact.phone_number}</span>
             </a>
           </div>
         )}

@@ -234,6 +234,28 @@ export const EmergencyViewerPage: React.FC = () => {
             </div>
           )}
 
+          {/* Secondary Emergency Contact (Requirement 11: Only displayed when explicitly authorized) */}
+          {data.secondary_contact && (
+            <div className="bg-slate-50 border border-slate-200 rounded-2xl p-4 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+              <div>
+                <div className="text-[10px] font-bold uppercase tracking-wider text-slate-500">
+                  Secondary Emergency Contact
+                </div>
+                <div className="text-base font-bold text-slate-900 mt-0.5">
+                  {data.secondary_contact.name} ({data.secondary_contact.relationship})
+                </div>
+              </div>
+
+              <a
+                href={`tel:${data.secondary_contact.phone_number}`}
+                className="inline-flex items-center justify-center gap-2 bg-slate-700 hover:bg-slate-800 text-white font-bold py-2.5 px-5 rounded-xl text-xs shadow-md shadow-slate-700/20 active:scale-95 transition-all"
+              >
+                <PhoneCall className="w-4 h-4 fill-current" />
+                <span>Call {data.secondary_contact.phone_number}</span>
+              </a>
+            </div>
+          )}
+
           {/* Allergies */}
           {data.allergies && (
             <div>

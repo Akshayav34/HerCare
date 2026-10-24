@@ -405,7 +405,9 @@ export const INITIAL_DEMO_CARD_CONFIG: EmergencyCardConfig = {
   share_conditions: true,
   share_medications: true,
   share_primary_contact: true,
-  share_secondary_contact: false,
+  share_secondary_contact: true,
+  share_emergency_notes: true,
+  is_active: true,
   emergency_notes: 'CRITICAL: Severe Penicillin allergy (anaphylaxis). Patient carries rescue inhaler for asthma.',
   created_at: new Date(Date.now() - 60 * 86400000).toISOString(),
   updated_at: new Date().toISOString(),
@@ -477,6 +479,11 @@ export const FICTIONAL_SAMPLE_EMERGENCY_CARD: EmergencyCardViewData = {
     name: 'David Lin',
     relationship: 'Spouse',
     phone_number: '+1 (555) 987-6543',
+  },
+  secondary_contact: {
+    name: 'Dr. Sarah Jenkins',
+    relationship: 'Treating Physician',
+    phone_number: '+1 (555) 654-3210',
   },
 };
 

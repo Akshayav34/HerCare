@@ -928,8 +928,35 @@ export const dataService = {
       localStorage.setItem(logKey, JSON.stringify(logs));
     } catch (e) {}
 
-    // Compile permitted fields according to patient config (Requirement 7)
+    // Compile permitted fields according to patient config (Fail-closed)
     const config = await this.getCardConfig(matchedToken.user_id);
+    if (config.is_active === false) {
+      return {
+        success: false,
+        error: 'CARD_INACTIVE',
+        message: 'This emergency health card is currently inactive or unconfigured.',
+      };
+    }
+
+    const hasAnyConsent = Boolean(
+      config.share_name ||
+      config.share_blood_group ||
+      config.share_allergies ||
+      config.share_conditions ||
+      config.share_medications ||
+      config.share_primary_contact ||
+      config.share_secondary_contact ||
+      (config.share_emergency_notes && config.emergency_notes)
+    );
+
+    if (!hasAnyConsent) {
+      return {
+        success: false,
+        error: 'NO_CONSENTED_FIELDS',
+        message: 'No emergency medical fields have been authorized for sharing by the patient.',
+      };
+    }
+
     const profile = await this.getProfile(matchedToken.user_id);
     const allergies = await this.getAllergies(matchedToken.user_id);
     const history = await this.getHistory(matchedToken.user_id);
@@ -937,13 +964,18 @@ export const dataService = {
     const contacts = await this.getContacts(matchedToken.user_id);
 
     const primaryContact = contacts.find(c => c.is_primary) || contacts[0];
+    const secondaryContact = contacts.find(c => !c.is_primary) || (contacts.length > 1 ? contacts[1] : undefined);
 
     const viewData: EmergencyCardViewData = {
       success: true,
       is_demo: false,
       last_updated: config.updated_at,
-      emergency_notes: config.emergency_notes || '',
     };
+
+    // Emergency notes (Requirement 3: strictly requires share_emergency_notes)
+    if (config.share_emergency_notes && config.emergency_notes && config.emergency_notes.trim().length > 0) {
+      viewData.emergency_notes = config.emergency_notes.trim();
+    }
 
     if (config.share_name) {
       viewData.full_name = profile.full_name || 'Patient';
@@ -987,6 +1019,14 @@ export const dataService = {
         name: primaryContact.name,
         relationship: primaryContact.relationship,
         phone_number: primaryContact.phone_number,
+      };
+    }
+
+    if (config.share_secondary_contact && secondaryContact) {
+      viewData.secondary_contact = {
+        name: secondaryContact.name,
+        relationship: secondaryContact.relationship,
+        phone_number: secondaryContact.phone_number,
       };
     }
 

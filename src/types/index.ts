@@ -177,6 +177,8 @@ export interface EmergencyCardConfig {
   share_medications: boolean;
   share_primary_contact: boolean;
   share_secondary_contact: boolean;
+  share_emergency_notes?: boolean;
+  is_active?: boolean;
   emergency_notes?: string;
   created_at: string;
   updated_at: string;
@@ -260,6 +262,11 @@ export interface EmergencyCardViewData {
     instructions?: string;
   }>;
   primary_contact?: {
+    name: string;
+    relationship: string;
+    phone_number: string;
+  };
+  secondary_contact?: {
     name: string;
     relationship: string;
     phone_number: string;
